@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominik Nguyên :></title>
+    <style>
+        #input {
+            width: 100%;
+            height: 120px;
+        }
+        #output {
+            width: 100%;
+            height: 120px;
+        }
+    </style>
+</head>
+<body>
+    <h2> Nhập mã C++: </h2>
+    <textarea id = "input" placeholder = "Nhập mã C++ tại đây"></textarea>
+    <button onclick = "encode();"> Mã hóa </button>
+    <h2> Mã đã được mã hóa: </h2>
+    <textarea id = "output" readonly></textarea>
+    <script>
+        function encodeString(str) {
+            var encoded = '';
+            for (var i = 0; i < str.length; i++)
+                if (str.charAt(i) === '\\' && str.charAt(i + 1) === 'n')
+                {
+                    encoded += '\\n';
+                    i++;
+                }
+                else if (str.charAt(i) === '\\' && str.charAt(i + 1) === 'r')
+                {
+                    encoded += '\\r';
+                    i++;
+                }
+                else if (str.charAt(i) === '\\' && str.charAt(i + 1) === 't')
+                {
+                    encoded += '\\t';
+                    i++;
+                }
+                else
+                    encoded += '\\x' + str.charCodeAt(i).toString(16);
+            return '"' + encoded + '"';
+        }
+        function encodeNumber(num)
+        {
+            if (num === 0)
+                return '(0x0000000000000000 + 0x0000000000000200 + 0x0000000000000800 - 0x0000000000000A00)';
+            else
+            {
+                var a = Math.floor(Math.random() * num);
+                var b = Math.floor(Math.random() * num);
+                var c = num + a + b;
+                return '(0x' + c.toString(16).padStart(16, '0') + ' - 0x' + a.toString(16).padStart(16, '0') + ' - 0x' + b.toString(16).padStart(16, '0') + ')';
+            }
+        }
+        function encode() {
+            var input = document.getElementById("input").value;
+            var output = document.getElementById("output");
+            var encoded = input.replace(/"([^"]*)"/g, function (match, p1)
+            {
+                if (isNaN(p1))
+                    return encodeString(p1);
+                else
+                    return '"' + encodeNumber(Number(p1)) + '"';
+            }).replace(/(?<!\.\w|\w\.\w|\w\()\b(\d+)\b(?!\.\w|\w\.\w|\w\))/g, function (match, p1)
+            {
+                return encodeNumber(Number(p1));
+            });
+            output.value = encoded;
+        }
+    </script>
+</body>
+</html>
